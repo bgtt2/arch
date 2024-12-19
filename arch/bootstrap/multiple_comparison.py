@@ -161,7 +161,7 @@ class MCS(MultipleComparison):
             raise ValueError(f"Unknown bootstrap: {bootstrap_meth}")
         self._seed = seed
         self.bootstrap: CircularBlockBootstrap = bootstrap_inst
-        self._bootstrap_indices: list[IntArray] = []  # For testing
+        #self._bootstrap_indices: list[IntArray] = []  # For testing
         self._model = "MCS"
         self._info = dict(
             [
@@ -219,9 +219,9 @@ class MCS(MultipleComparison):
         bs = self.bootstrap
         for j, data in enumerate(bs.bootstrap(self.reps)):
             bs_index = data[0][0]  # Only element in pos data
-            self._bootstrap_indices.append(
-                np.asarray(bs_index, dtype=int)
-            )  # For testing
+            #self._bootstrap_indices.append(
+            #    np.asarray(bs_index, dtype=int)
+            #)  # For testing
             mean_losses_star = losses[bs_index].mean(0)[:, None]
             bootstrapped_mean_losses[j] = mean_losses_star - mean_losses_star.T
         # Recenter
@@ -270,9 +270,9 @@ class MCS(MultipleComparison):
         bs_avg_loss_errors = np.zeros((self.reps, self.k))
         for i, data in enumerate(self.bootstrap.bootstrap(self.reps)):
             bs_index = data[0][0]
-            self._bootstrap_indices.append(
-                np.asarray(bs_index, dtype=int)
-            )  # For testing
+            #self._bootstrap_indices.append(
+            #    np.asarray(bs_index, dtype=int)
+            #)  # For testing
             bs_errors = loss_errors[bs_index]
             avg_bs_errors = bs_errors.mean(0)
             avg_bs_errors -= avg_bs_errors.mean()
