@@ -5,6 +5,7 @@ import warnings
 
 import numpy as np
 import pandas as pd
+from tqdm import tqdm
 
 from arch.bootstrap.base import (
     CircularBlockBootstrap,
@@ -217,7 +218,7 @@ class MCS(MultipleComparison):
         # In each bootstrap, save the average difference of each pair (b,k,k)
         bootstrapped_mean_losses = np.zeros((self.reps, self.k, self.k))
         bs = self.bootstrap
-        for j, data in enumerate(bs.bootstrap(self.reps)):
+        for j, data in tqdm(enumerate(bs.bootstrap(self.reps)), total=self.reps, desc="Generating Bootstrap Samples"):
             bs_index = data[0][0]  # Only element in pos data
             #self._bootstrap_indices.append(
             #    np.asarray(bs_index, dtype=int)
@@ -237,6 +238,7 @@ class MCS(MultipleComparison):
         included = np.ones(self.k, dtype=np.bool_)
         # Loop until there is only 1 model left
         eliminated = []
+        pbar = tqdm(total=self.k, desc="Reducing Model Set")
         while included.sum() > 1:
             indices = np.argwhere(included)
             included_loss_diffs = std_loss_diffs[indices, indices.T]
@@ -252,6 +254,8 @@ class MCS(MultipleComparison):
             i = loc.squeeze()[0]
             eliminated.append((indices.flat[i], pval))
             included[indices.flat[i]] = False
+            pbar.update(1)
+        pbar.close()
         # Add pval of 1 for model remaining
         indices = np.argwhere(included).flatten()
         for ind in indices:
